@@ -1,7 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:shopping_list_app/data/categories.dart';
 import 'package:shopping_list_app/models/category_models.dart';
-import 'package:shopping_list_app/models/grocery_item_models.dart';
+import 'package:http/http.dart' as http;
 
 class NewItem extends StatefulWidget{
  const NewItem({super.key});
@@ -21,14 +23,30 @@ class _NewItemState extends State<NewItem>{
   void _saveItem () {
     if (_formKey.currentState!.validate()) { //execute validation
       _formKey.currentState!.save(); //save form data
-      Navigator.of(context).pop(
-        GroceryItem(
-          id: DateTime.now().toString(), 
-          name: _enteredName, 
-          quantity: _enteredQuantity, 
-          category: _selectedCategory,
+      final url = Uri.http(
+        'flutter-prep-52d09-default-rtdb.asia-southeast1.firebasedatabase.app','shopping_list.json'
+      );
+      http.post(
+        url, 
+        headers: {
+          'Content-Type': 'application/json',
+        }, 
+        body: json.encode(
+          {
+          'name': _enteredName, 
+          'quantity': _enteredQuantity, 
+          'category': _selectedCategory.title,
+          }
         ),
-      ); //close the form
+      );
+      // // Navigator.of(context).pop(
+      //   GroceryItem(
+      //     id: DateTime.now().toString(), 
+      //     name: _enteredName, 
+      //     quantity: _enteredQuantity, 
+      //     category: _selectedCategory,
+      //   ),
+      // ); lose the form
     } 
   }
 
